@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  .link {
+    text-decoration: none;
+    color: inherit;
+  }
+}
