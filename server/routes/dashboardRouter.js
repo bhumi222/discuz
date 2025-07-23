@@ -1,37 +1,27 @@
-// server/routes/dashboardRoutes.js
 const express = require("express");
-const router = express.Router();
-const Student = require("../models/Student");
-const Course = require("../models/Course");
-const Class = require("../models/Class");
-const Activity = require("../models/Activity");
+const userSchema = require('../models/User');
+const classSchema = require('../models/class.js')
+const assignmentSchema = require('../models/Assignment.js')
+const eventSchema= require('../models/event.js')
 
+const router = express.Router();
+
+// Get dashboard stats
 router.get("/stats", async (req, res) => {
   try {
-    const studentCount = await Student.countDocuments();
-    const courseCount = await Course.countDocuments();
+    const studentCount = await User.countDocuments({ role: "student" });
     const classCount = await Class.countDocuments();
-    const eventCount = 0; // Add Event model if you have one
+    const assignmentCount = await Assignment.countDocuments();
+    const upcomingEvents = await Event.find({ date: { $gte: new Date() } }).limit(5);
 
     res.json({
       students: studentCount,
-      courses: courseCount,
       classes: classCount,
-      events: eventCount,
+      assignments: assignmentCount,
+      events: upcomingEvents
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch dashboard stats" });
-  }
-});
-
-router.get("/activities", async (req, res) => {
-  try {
-    const activities = await Activity.find().sort({ _id: -1 }).limit(10);
-    res.json(activities);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch recent activities" });
+    res.status(500).json({ message: "Error fetching dashboard stats" });
   }
 });
 

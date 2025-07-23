@@ -6,4 +6,4 @@ const studentSchema = new mongoose.Schema({
   enrolledCourses: [String],
 });
 
-module.exports = mongoose.model("Student", studentSchema);
+module.exports = studentSchema;

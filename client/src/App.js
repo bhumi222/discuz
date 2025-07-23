@@ -4,7 +4,6 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-// Pages
 import Navbar from './component/navbar/Navbar';
 import Registration from './pages/auth/Registration';
 import Login from './pages/auth/Login';
@@ -20,6 +19,7 @@ import StudentDirectory from './pages/studentdirectory/Studentdirectory';
 import Profile from './pages/profile/profile';
 import SettingsPage from './pages/setting/Setting';
 import ReminderCalendar from './pages/remaindercalender/Remaindercalender';
+import ErrorPage from './pages/ErrorPage'; 
 
 function App() {
   const [theme, setTheme] = useState('light');
@@ -39,44 +39,53 @@ function App() {
   }, [theme]);
 
   const router = createBrowserRouter([
-    { path: '/', element: <Login /> },
-    { path: '/Registration', element: <Registration /> },
-    { path: '/rough', element: <Rough /> },
+    { path: '/', element: <Login />, errorElement: <ErrorPage /> },
+    { path: '/Registration', element: <Registration />, errorElement: <ErrorPage /> },
+    { path: '/rough', element: <Rough />, errorElement: <ErrorPage /> },
     {
       path: '/about',
       element: <Layout><About /></Layout>,
+      errorElement: <ErrorPage />,
     },
     {
       path: '/dashboard',
       element: <Layout><Dashboard /></Layout>,
+      errorElement: <ErrorPage />,
     },
     {
       path: '/classdetails',
       element: <Layout><ClassDetails /></Layout>,
+      errorElement: <ErrorPage />,
     },
     {
       path: '/calender',
       element: <Layout><ReminderCalendar /></Layout>,
+      errorElement: <ErrorPage />,
     },
     {
       path: '/contact',
       element: <Layout><Contact /></Layout>,
+      errorElement: <ErrorPage />,
     },
     {
       path: '/assignment',
       element: <Layout><AssignmentPage /></Layout>,
+      errorElement: <ErrorPage />,
     },
     {
       path: '/studentd',
       element: <Layout><StudentDirectory /></Layout>,
+      errorElement: <ErrorPage />,
     },
     {
       path: '/profile',
       element: <Layout><Profile /></Layout>,
+      errorElement: <ErrorPage />,
     },
     {
       path: '/setting',
       element: <Layout><SettingsPage theme={theme} setTheme={setTheme} /></Layout>,
+      errorElement: <ErrorPage />,
     },
   ]);
 
