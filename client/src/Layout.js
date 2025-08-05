@@ -8,7 +8,7 @@ const AppLayout = ({ children }) => {
     <div>
       
       <Sidebar />
-      <div className="ml-44 mt-16 p-6 bg-gray-50 min-h-screen">
+      <div className="ml-56 mt-16   bg-gray-50 min-h-screen">
         <Navbar />
         {children}
       </div>

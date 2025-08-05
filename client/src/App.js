@@ -1,100 +1,75 @@
-import React, { useEffect, useState } from 'react';
 import './App.css';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import Navbar from './component/navbar/Navbar';
-import Registration from './pages/auth/Registration';
-import Login from './pages/auth/Login';
-import Rough from './pages/rough/Rough';
-import Sidebar from './component/sidebar/Sidebar';
+// Layout & Wrappers
 import Layout from './Layout';
+import PublicRoute from './component/PublicRoute';
+import PrivateRoute from './component/PrivateRoute';
+
+// Pages
+import Login from './pages/auth/Login';
+import Registration from './pages/auth/Registration';
+import Dashboard from './pages/dashboard/Dashboard';
 import About from './pages/about/About';
 import Contact from './pages/contact/Contact';
-import Dashboard from './pages/dashboard/Dashboard';
 import ClassDetails from './pages/classdetails/classDetails';
+import AssignmentList from './pages/assignment/AssignmentList';
 import AssignmentPage from './pages/assignment/Assignmentpage';
 import StudentDirectory from './pages/studentdirectory/Studentdirectory';
 import Profile from './pages/profile/profile';
 import SettingsPage from './pages/setting/Setting';
 import ReminderCalendar from './pages/remaindercalender/Remaindercalender';
-import ErrorPage from './pages/ErrorPage'; 
+import Rough from './pages/rough/Rough';
+import Courses from './pages/course/Courses';
+import CoursePage from './pages/course/CoursePage';
+import AddAssignment from "./pages/assignment/AddAssignment";
+import ManageAdmins from "./pages/admin/ManageAdmins"; // ✅ NEW
 
 function App() {
-  const [theme, setTheme] = useState('light');
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) setTheme(savedTheme);
-  }, []);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-  }, [theme]);
-
-  const router = createBrowserRouter([
-    { path: '/', element: <Login />, errorElement: <ErrorPage /> },
-    { path: '/Registration', element: <Registration />, errorElement: <ErrorPage /> },
-    { path: '/rough', element: <Rough />, errorElement: <ErrorPage /> },
-    {
-      path: '/about',
-      element: <Layout><About /></Layout>,
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: '/dashboard',
-      element: <Layout><Dashboard /></Layout>,
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: '/classdetails',
-      element: <Layout><ClassDetails /></Layout>,
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: '/calender',
-      element: <Layout><ReminderCalendar /></Layout>,
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: '/contact',
-      element: <Layout><Contact /></Layout>,
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: '/assignment',
-      element: <Layout><AssignmentPage /></Layout>,
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: '/studentd',
-      element: <Layout><StudentDirectory /></Layout>,
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: '/profile',
-      element: <Layout><Profile /></Layout>,
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: '/setting',
-      element: <Layout><SettingsPage theme={theme} setTheme={setTheme} /></Layout>,
-      errorElement: <ErrorPage />,
-    },
-  ]);
-
   return (
-    <>
-      <ToastContainer position="top-right" autoClose={3000} />
-      <RouterProvider router={router} />
-    </>
+    <Routes>
+      {/* 🔓 Public routes */}
+      <Route path="/" element={<PublicRoute><Login /></PublicRoute>} />
+      <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+      <Route path="/registration" element={<PublicRoute><Registration /></PublicRoute>} />
+
+      {/* 🔒 Private routes */}
+      <Route path="/dashboard" element={<PrivateRoute><Layout><Dashboard /></Layout></PrivateRoute>} />
+      <Route path="/about" element={<PrivateRoute><Layout><About /></Layout></PrivateRoute>} />
+      <Route path="/contact" element={<PrivateRoute><Layout><Contact /></Layout></PrivateRoute>} />
+      <Route path="/classdetails" element={<PrivateRoute><Layout><ClassDetails /></Layout></PrivateRoute>} />
+      <Route path="/assignments" element={<PrivateRoute><Layout><AssignmentList /></Layout></PrivateRoute>} />
+      <Route path="/assignments/:id" element={<PrivateRoute><Layout><AssignmentPage /></Layout></PrivateRoute>} />
+      <Route path="/courses" element={<PrivateRoute><Layout><Courses /></Layout></PrivateRoute>} />
+      <Route path="/courses/:id/assignments/new" element={<PrivateRoute><Layout><AddAssignment /></Layout></PrivateRoute>} />
+      <Route path="/courses/:id" element={<PrivateRoute><Layout><CoursePage /></Layout></PrivateRoute>} />
+      <Route path="/studentd" element={<PrivateRoute><Layout><StudentDirectory /></Layout></PrivateRoute>} />
+      <Route path="/profile" element={<PrivateRoute><Layout><Profile /></Layout></PrivateRoute>} />
+      <Route path="/setting" element={<PrivateRoute><Layout><SettingsPage /></Layout></PrivateRoute>} />
+      <Route path="/calendar" element={<PrivateRoute><Layout><ReminderCalendar /></Layout></PrivateRoute>} />
+      <Route path="/manage-admins" element={<PrivateRoute><Layout><ManageAdmins /></Layout></PrivateRoute>} /> {/* ✅ NEW */}
+      <Route path="/rough" element={<Rough />} />
+    </Routes>
   );
 }
 
-export default App;
+export default function RootApp() {
+  return (
+    <Router>
+      <App />
+      <ToastContainer
+        position="bottom-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        pauseOnFocusLoss={false}
+        theme="light"
+      />
+    </Router>
+  );
+}

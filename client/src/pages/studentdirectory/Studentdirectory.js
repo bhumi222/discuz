@@ -1,70 +1,92 @@
-import React, { useState } from "react";
-
-const students = [
-  {
-    id: 1,
-    name: "Aarav Mehta",
-    rollNo: "DS001",
-    email: "aarav.mehta@example.com",
-    course: "BSc Data Science",
-    year: "2nd Year",
-    contact: "9876543210",
-    photo: "https://randomuser.me/api/portraits/men/32.jpg",
-  },
-  {
-    id: 2,
-    name: "Ishita Shah",
-    rollNo: "DS002",
-    email: "ishita.shah@example.com",
-    course: "BSc Data Science",
-    year: "2nd Year",
-    contact: "9876501234",
-    photo: "https://randomuser.me/api/portraits/women/44.jpg",
-  },
-];
+import React, { useEffect, useState } from "react";
+import defaultProfile from "../../assests/noprofile.jpeg";
 
 const StudentDirectory = () => {
-  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch("http://localhost:7777/api/courses")
+      .then(res => res.json())
+      .then(data => setCourses(data))
+      .catch(err => console.error("Failed to load courses:", err));
+  }, []);
+
+  const openCourseStudents = async (course) => {
+    setSelectedCourse(course);
+    setLoading(true);
+    try {
+      const res = await fetch(`http://localhost:7777/api/courses/${course._id}/students`);
+      const data = await res.json();
+      setStudents(data.students || []);
+    } catch (err) {
+      console.error("Failed to fetch students", err);
+      setStudents([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h1 className="text-2xl font-bold mb-6 text-center">Student Directory</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {students.map((student) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {courses.map((course) => (
           <div
-            key={student.id}
-            onClick={() => setSelectedStudent(student)}
+            key={course._id}
+            onClick={() => openCourseStudents(course)}
             className="bg-white p-4 rounded-xl shadow hover:shadow-lg cursor-pointer transition"
           >
-            <p className="text-lg font-semibold text-gray-800">{student.name}</p>
-            <p className="text-sm text-gray-500">{student.rollNo}</p>
+            <h2 className="text-lg font-semibold text-gray-800">{course.title}</h2>
+            <p className="text-sm text-gray-500">{course.description?.short}</p>
           </div>
         ))}
       </div>
 
-      {/* Modal */}
-      {selectedStudent && (
+      {/* Modal for students */}
+      {selectedCourse && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-full max-w-md p-6">
-            <div className="flex flex-col items-center space-y-4">
-              <img
-                src={selectedStudent.photo}
-                alt={selectedStudent.name}
-                className="w-24 h-24 rounded-full shadow-md"
-              />
-              <h2 className="text-xl font-bold">{selectedStudent.name}</h2>
-              <p className="text-sm text-gray-500">{selectedStudent.rollNo}</p>
-              <div className="text-gray-700 text-sm text-left w-full space-y-1">
-                <p><strong>Email:</strong> {selectedStudent.email}</p>
-                <p><strong>Course:</strong> {selectedStudent.course}</p>
-                <p><strong>Year:</strong> {selectedStudent.year}</p>
-                <p><strong>Contact:</strong> {selectedStudent.contact}</p>
-              </div>
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+            <h2 className="text-xl font-semibold mb-4 text-center">
+              Students in {selectedCourse.title}
+            </h2>
 
+            {loading ? (
+              <p className="text-center text-gray-500">Loading...</p>
+            ) : students.length > 0 ? (
+              <div className="grid gap-4 max-h-[400px] overflow-y-auto">
+                {students.map((s) => (
+                  <div key={s._id} className="flex items-center gap-4 p-3 border rounded">
+                    <img
+                      src={s.photo || defaultProfile}
+                      alt={s.first_Name}
+                      className="w-12 h-12 rounded-full object-cover border"
+                    />
+
+                    <div>
+                      <p className="font-semibold text-gray-800">
+                        {s.first_Name} {s.LastName}
+                      </p>
+                      <p className="text-sm text-gray-500">{s.email}</p>
+                      <p className="text-xs text-gray-400">{s.rollNo}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-gray-500">No students enrolled.</p>
+            )}
+
+            <div className="flex justify-end mt-6 gap-2">
               <button
-                onClick={() => setSelectedStudent(null)}
-                className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                onClick={() => {
+                  setSelectedCourse(null);
+                  setStudents([]);
+                }}
+                className="px-4 py-2 border rounded text-gray-600"
               >
                 Close
               </button>
@@ -72,6 +94,7 @@ const StudentDirectory = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };

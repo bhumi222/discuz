@@ -55,9 +55,14 @@ const Login = () => {
       );
 
       if (response.status === 200) {
-        localStorage.setItem("user", JSON.stringify(response.data));
+        localStorage.setItem("token", response.data.token);
+        const fullName = `${response.data.user.first_Name} ${response.data.user.LastName}`;
+        const userWithName = { ...response.data.user, name: fullName };
+        localStorage.setItem("user", JSON.stringify(userWithName));
+
         triggerNotification("success", "Login successful.");
         navigate("/dashboard", { replace: true });
+
       }
     } catch (error) {
       const errMsg = error?.response?.data?.message || "Something went wrong.";
