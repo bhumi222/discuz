@@ -15,10 +15,10 @@ const reminderRoutes = require("./routes/reminderRoutes");
 dotenv.config();
 const app = express();
 
-// ✅ ALLOW BOTH LOCALHOST & VERCEL FRONTEND
+// ✅ Yaha origins add karo: LOCAL + VERCEL
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://discuz-bgb2-ot4a4dl9e-bhumis-projects-ef39fb6d.vercel.app"
+  "https://discuz-bgb2.vercel.app",
 ];
 
 app.use(
@@ -27,6 +27,9 @@ app.use(
     credentials: true,
   })
 );
+
+// (optional – agar preflight ka issue aaye)
+// app.options("*", cors({ origin: allowedOrigins, credentials: true }));
 
 app.use(express.json());
 app.use(cookieParser());
