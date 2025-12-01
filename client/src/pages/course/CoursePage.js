@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+const API = process.env.REACT_APP_API_URL;
+
 const CoursePage = () => {
   const { id: courseId } = useParams();
   const [course, setCourse] = useState(null);
@@ -14,17 +16,15 @@ const CoursePage = () => {
 
   useEffect(() => {
     const fetchCourse = async () => {
-      const res = await fetch(`http://localhost:7777/api/courses`);
+      const res = await fetch(`${API}/api/courses`);
       const allCourses = await res.json();
       const found = allCourses.find(c => c._id === courseId);
       setCourse(found);
     };
 
-
-
     fetchCourse();
 
-    fetch(`http://localhost:7777/api/courses/${courseId}/assignments`)
+    fetch(`${API}/api/courses/${courseId}/assignments`)
       .then((res) => res.json())
       .then(setAssignments)
       .catch((err) => {
@@ -36,7 +36,7 @@ const CoursePage = () => {
     if (!window.confirm("Are you sure you want to delete this course?")) return;
 
     try {
-      const res = await fetch(`http://localhost:7777/api/courses/${courseId}`, {
+      const res = await fetch(`${API}/api/courses/${courseId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`
@@ -56,7 +56,6 @@ const CoursePage = () => {
     }
   };
 
-
   const handleCopy = () => {
     navigator.clipboard.writeText(course.entryCode);
     toast.success("Copied!");
@@ -75,7 +74,7 @@ const CoursePage = () => {
 
   const handleCourseUpdate = async () => {
     try {
-      const res = await fetch(`http://localhost:7777/api/courses/${courseId}`, {
+      const res = await fetch(`${API}/api/courses/${courseId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -113,7 +112,7 @@ const CoursePage = () => {
             )}
           </div>
 
-          <div className="  pt-4">
+          <div className="pt-4">
             <p className="text-sm text-gray-600">Teacher: {course.teacher}</p>
             <div className="flex items-center text-sm text-gray-500 mt-1">
               <span className="font-mono">{course.entryCode}</span>
@@ -125,32 +124,36 @@ const CoursePage = () => {
               </button>
             </div>
           </div>
+
           <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-gray-300 to-transparent my-6" />
 
-
-          <div className="  pt-4  row text-sm text-gray-700">
-            <div className="col-md-6"><p><strong>Duration:</strong> {course.duration} hrs</p></div>
-            <div className="col-md-6"><p><strong>Marks:</strong> {course.passMarks} / {course.totalMarks}</p></div>
+          <div className="pt-4 row text-sm text-gray-700">
+            <div className="col-md-6">
+              <p><strong>Duration:</strong> {course.duration} hrs</p>
+            </div>
+            <div className="col-md-6">
+              <p><strong>Marks:</strong> {course.passMarks} / {course.totalMarks}</p>
+            </div>
           </div>
+
           <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-gray-300 to-transparent my-6" />
 
-
-          <div className="  pt-4">
+          <div className="pt-4">
             <h3 className="text-md font-semibold text-gray-700 mb-1">Short Description</h3>
             <p className="text-gray-600 whitespace-pre-line break-words">{course.description.short}</p>
           </div>
+
           <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-gray-300 to-transparent my-6" />
 
-
-          <div className="  pt-4">
+          <div className="pt-4">
             <h3 className="text-md font-semibold text-gray-700 mb-1">Long Description</h3>
             <p className="text-gray-600 whitespace-pre-line break-words">{course.description.long}</p>
           </div>
+
           <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-gray-300 to-transparent my-6" />
 
-
           {course.teacherId === user._id && (
-            <div className="  pt-4 text-right">
+            <div className="pt-4 text-right">
               <button
                 onClick={openEditModal}
                 className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md"
@@ -189,7 +192,6 @@ const CoursePage = () => {
                     </span>
                   </p>
                 </div>
-
               </div>
               <button
                 onClick={() => navigate(`/assignments/${a._id}`)}
@@ -202,7 +204,6 @@ const CoursePage = () => {
         ))}
       </div>
 
-      {/* Edit Course Modal */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
@@ -258,6 +259,7 @@ const CoursePage = () => {
               value={editData.passMarks}
               onChange={(e) => setEditData({ ...editData, passMarks: e.target.value })}
             />
+
             <div className="flex justify-end gap-2">
               <button onClick={() => setShowEditModal(false)} className="px-4 py-2 border rounded text-gray-600">
                 Cancel

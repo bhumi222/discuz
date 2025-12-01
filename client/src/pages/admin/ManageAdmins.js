@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { FaUserShield, FaUser, FaSearch, FaTrashAlt, FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 
+const API = process.env.REACT_APP_API_URL;
+
 const ManageAdmins = () => {
   const [users, setUsers] = useState([]);
   const [query, setQuery] = useState("");
@@ -9,12 +11,11 @@ const ManageAdmins = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("http://localhost:7777/api/users/all", {
+      const res = await fetch(`${API}/api/users/all`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
       if (Array.isArray(data)) {
-        // ✅ Exclude Bhumi
         const filtered = data.filter(u => u.emailId !== "bhumivyas@admin.com");
         setUsers(filtered);
       }
@@ -25,7 +26,7 @@ const ManageAdmins = () => {
 
   const handleRoleChange = async (user, makeAdmin) => {
     try {
-      const res = await fetch(`http://localhost:7777/api/users/${user._id}/role`, {
+      const res = await fetch(`${API}/api/users/${user._id}/role`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

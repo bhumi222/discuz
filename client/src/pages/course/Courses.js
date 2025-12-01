@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
+const API = process.env.REACT_APP_API_URL;
+
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [joiningCourse, setJoiningCourse] = useState(null);
@@ -26,14 +28,14 @@ const Courses = () => {
 
   const fetchCourses = async () => {
     try {
-      const res = await fetch("http://localhost:7777/api/courses");
+      const res = await fetch(`${API}/api/courses`);
       const data = await res.json();
       const sorted = data
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // newest first
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .sort((a, b) => {
           const aJoined = a.enrolledStudents.includes(userId) || a.teacherId === userId;
           const bJoined = b.enrolledStudents.includes(userId) || b.teacherId === userId;
-          return bJoined - aJoined; // joined/owned first
+          return bJoined - aJoined;
         });
 
       setCourses(sorted);
@@ -48,7 +50,7 @@ const Courses = () => {
 
   const handleJoin = async (courseId) => {
     try {
-      const res = await fetch(`http://localhost:7777/api/courses/join/${courseId}`, {
+      const res = await fetch(`${API}/api/courses/join/${courseId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, code: entryCode })
@@ -84,7 +86,7 @@ const Courses = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:7777/api/courses", {
+      const res = await fetch(`${API}/api/courses`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -110,10 +112,8 @@ const Courses = () => {
       }
     } catch (err) {
       toast.error("Server error while adding course");
-      console.error("Add course error:", err);
     }
   };
-
 
   return (
     <div className="p-8">
@@ -149,6 +149,7 @@ const Courses = () => {
                 <p className="text-gray-400 text-sm">Duration: {course.duration} hours</p>
                 <p className="text-gray-400 text-sm">Marks: {course.passMarks}/{course.totalMarks}</p>
               </div>
+
               {course.teacherId === userId || isJoined ? (
                 <button
                   className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
@@ -164,13 +165,11 @@ const Courses = () => {
                   Join
                 </button>
               )}
-
             </div>
           );
         })}
       </div>
 
-      {/* Join Modal */}
       {joiningCourse && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-sm">
@@ -197,11 +196,11 @@ const Courses = () => {
         </div>
       )}
 
-      {/* Add Course Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">Add New Course</h2>
+
             <input
               type="text"
               placeholder="Course title"
@@ -209,25 +208,32 @@ const Courses = () => {
               value={newCourse.title}
               onChange={(e) => setNewCourse({ ...newCourse, title: e.target.value })}
             />
+
             <input
               type="text"
               placeholder="Short description"
               className="w-full px-3 py-2 border rounded mb-2"
               value={newCourse.description.short}
-              onChange={(e) => setNewCourse({
-                ...newCourse,
-                description: { ...newCourse.description, short: e.target.value }
-              })}
+              onChange={(e) =>
+                setNewCourse({
+                  ...newCourse,
+                  description: { ...newCourse.description, short: e.target.value }
+                })
+              }
             />
+
             <textarea
               placeholder="Long description"
               className="w-full px-3 py-2 border rounded mb-2"
               value={newCourse.description.long}
-              onChange={(e) => setNewCourse({
-                ...newCourse,
-                description: { ...newCourse.description, long: e.target.value }
-              })}
+              onChange={(e) =>
+                setNewCourse({
+                  ...newCourse,
+                  description: { ...newCourse.description, long: e.target.value }
+                })
+              }
             />
+
             <input
               type="number"
               placeholder="Duration (hours)"
@@ -235,6 +241,7 @@ const Courses = () => {
               value={newCourse.duration}
               onChange={(e) => setNewCourse({ ...newCourse, duration: e.target.value })}
             />
+
             <input
               type="number"
               placeholder="Total Marks"
@@ -242,6 +249,7 @@ const Courses = () => {
               value={newCourse.totalMarks}
               onChange={(e) => setNewCourse({ ...newCourse, totalMarks: e.target.value })}
             />
+
             <input
               type="number"
               placeholder="Pass Marks"
@@ -249,6 +257,7 @@ const Courses = () => {
               value={newCourse.passMarks}
               onChange={(e) => setNewCourse({ ...newCourse, passMarks: e.target.value })}
             />
+
             <div className="flex justify-end gap-2">
               <button onClick={() => setShowAddModal(false)} className="px-4 py-2 border rounded text-gray-600">
                 Cancel

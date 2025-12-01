@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import defaultProfile from "../../assests/noprofile.jpeg";
 
+const API = process.env.REACT_APP_API_URL;
+
 const StudentDirectory = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -8,7 +10,7 @@ const StudentDirectory = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:7777/api/courses")
+    fetch(`${API}/api/courses`)
       .then(res => res.json())
       .then(data => setCourses(data))
       .catch(err => console.error("Failed to load courses:", err));
@@ -18,7 +20,7 @@ const StudentDirectory = () => {
     setSelectedCourse(course);
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:7777/api/courses/${course._id}/students`);
+      const res = await fetch(`${API}/api/courses/${course._id}/students`);
       const data = await res.json();
       setStudents(data.students || []);
     } catch (err) {
@@ -46,7 +48,6 @@ const StudentDirectory = () => {
         ))}
       </div>
 
-      {/* Modal for students */}
       {selectedCourse && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
@@ -94,7 +95,6 @@ const StudentDirectory = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

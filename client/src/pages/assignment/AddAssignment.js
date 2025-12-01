@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+const API = process.env.REACT_APP_API_URL;
+
 const AddAssignment = () => {
   const { id: courseId } = useParams();
   const [form, setForm] = useState({
@@ -42,7 +44,7 @@ const AddAssignment = () => {
     formData.append("questionFile", questionFile);
 
     try {
-      const res = await fetch("http://localhost:7777/api/assignments", {
+      const res = await fetch(`${API}/api/assignments`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`

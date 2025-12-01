@@ -7,6 +7,8 @@ import Logo from "../../assests/logo.jpg";
 import axios from "axios";
 import { triggerNotification } from "../../utils/toastUtil";
 
+const API = process.env.REACT_APP_API_URL;
+
 const Login = () => {
   const [formData, setFormData] = useState({
     emailId: "",
@@ -43,16 +45,12 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:7777/auth/login",
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post(`${API}/auth/login`, formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
@@ -62,7 +60,6 @@ const Login = () => {
 
         triggerNotification("success", "Login successful.");
         navigate("/dashboard", { replace: true });
-
       }
     } catch (error) {
       const errMsg = error?.response?.data?.message || "Something went wrong.";
@@ -88,6 +85,7 @@ const Login = () => {
               />
               <p className="text-gray-500">Please sign in to your account.</p>
             </div>
+
             <form className="space-y-5" onSubmit={handleLogin}>
               <div className="space-y-2">
                 <label htmlFor="emailId" className="text-sm font-medium text-gray-700">
@@ -141,6 +139,7 @@ const Login = () => {
           </div>
         </div>
       </div>
+
       <ToastContainer />
     </div>
   );

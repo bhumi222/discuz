@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API = process.env.REACT_APP_API_URL;
+
 const AssignmentList = () => {
   const [submitted, setSubmitted] = useState([]);
   const [notSubmitted, setNotSubmitted] = useState([]);
@@ -11,7 +13,7 @@ const AssignmentList = () => {
   useEffect(() => {
     if (!userId) return;
 
-    fetch(`http://localhost:7777/api/assignments?userId=${userId}`)
+    fetch(`${API}/api/assignments?userId=${userId}`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -21,8 +23,7 @@ const AssignmentList = () => {
             dueDateObj: new Date(a.dueDate)
           }));
 
-          // Sort by soonest due date
-          withCourse.sort((a, b) => a.dueDateObj - b.dueDateObj);
+          withCourse.sort((a, b) => a.dueDateObj - b.ddueDateObj);
 
           const submitted = withCourse.filter(
             (a) => a.status === "Submitted" || a.status === "Marked as Done"
@@ -31,8 +32,6 @@ const AssignmentList = () => {
 
           setSubmitted(submitted);
           setNotSubmitted(notSubmitted);
-        } else {
-          console.error("Unexpected response:", data);
         }
       })
       .catch((err) => {

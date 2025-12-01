@@ -4,6 +4,8 @@ import "react-calendar/dist/Calendar.css";
 import { FaBell, FaTrash, FaEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 
+const API = process.env.REACT_APP_API_URL;
+
 const ReminderCalendar = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
@@ -15,10 +17,9 @@ const ReminderCalendar = () => {
   const [editingReminder, setEditingReminder] = useState(null);
   const [inputText, setInputText] = useState("");
 
-  // Fetch all reminders from backend
   const fetchReminders = async () => {
     try {
-      const res = await fetch(`http://localhost:7777/api/reminders?userId=${user._id}`, {
+      const res = await fetch(`${API}/api/reminders?userId=${user._id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -27,11 +28,10 @@ const ReminderCalendar = () => {
       if (Array.isArray(data)) {
         setReminders(data);
       } else {
-        setReminders([]); // ✅ fallback
-        console.error("Unexpected reminder response:", data);
+        setReminders([]);
       }
-    } catch (err) {
-      setReminders([]); // ✅ ensure safe default
+    } catch {
+      setReminders([]);
       toast.error("Failed to load reminders");
     }
   };
@@ -52,9 +52,11 @@ const ReminderCalendar = () => {
     }
 
     setSelectedDate(date);
+
     const match = reminders.find(
       (r) => r.date === date.toDateString() && r.userId?.toString() === user._id && r.type === "personal"
     );
+
     if (match) {
       setEditingReminder(match);
       setInputText(match.text);
@@ -71,7 +73,7 @@ const ReminderCalendar = () => {
     try {
       let res;
       if (editingReminder && editingReminder._id) {
-        res = await fetch(`http://localhost:7777/api/reminders/${editingReminder._id}`, {
+        res = await fetch(`${API}/api/reminders/${editingReminder._id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -80,7 +82,7 @@ const ReminderCalendar = () => {
           body: JSON.stringify({ text: inputText })
         });
       } else {
-        res = await fetch(`http://localhost:7777/api/reminders`, {
+        res = await fetch(`${API}/api/reminders`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -102,14 +104,14 @@ const ReminderCalendar = () => {
       } else {
         toast.error("Failed to save");
       }
-    } catch (err) {
+    } catch {
       toast.error("Error saving reminder");
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`http://localhost:7777/api/reminders/${id}`, {
+      const res = await fetch(`${API}/api/reminders/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`
@@ -129,13 +131,17 @@ const ReminderCalendar = () => {
   const tileContent = ({ date, view }) => {
     if (view !== "month") return null;
     const dateStr = date.toDateString();
-    const hasPersonal = reminders.some((r) => r.date === dateStr && r.userId?.toString() === user._id && r.type === "personal");
+
+    const hasPersonal = reminders.some(
+      (r) => r.date === dateStr && r.userId?.toString() === user._id && r.type === "personal"
+    );
+
     const hasEvent = reminders.some((r) => r.date === dateStr && r.type === "event");
 
     return (
       <div className="flex justify-center items-center mt-1 gap-1 text-sm">
-        {hasPersonal && <FaBell className="text-yellow-500" title="Your Reminder" />}
-        {hasEvent && <FaBell className="text-blue-500" title="Admin Event" />}
+        {hasPersonal && <FaBell className="text-yellow-500" />}
+        {hasEvent && <FaBell className="text-blue-500" />}
       </div>
     );
   };
@@ -156,11 +162,12 @@ const ReminderCalendar = () => {
 
         <div className="bg-white p-6 rounded-lg shadow w-full lg:w-1/2">
           <h2 className="text-lg font-bold text-gray-800 mb-4">📝 All Reminders</h2>
+
           {reminders.length === 0 ? (
             <p className="text-gray-500">No reminders yet.</p>
           ) : (
             <ul className="space-y-3">
-              {(reminders || [])
+              {reminders
                 .sort((a, b) => new Date(a.date) - new Date(b.date))
                 .map((r) => (
                   <li key={r._id} className="border-b pb-2 relative">
@@ -170,7 +177,7 @@ const ReminderCalendar = () => {
                     <p className="text-gray-700">{r.text}</p>
 
                     {(r.type === "personal" && r.userId?.toString() === user._id) ||
-                      (r.type === "event" && isBhumi) ? (
+                    (r.type === "event" && isBhumi) ? (
                       <div className="absolute right-2 top-2 flex gap-2">
                         <FaEdit
                           className="text-gray-500 cursor-pointer hover:text-blue-600"
@@ -194,7 +201,6 @@ const ReminderCalendar = () => {
         </div>
       </div>
 
-      {/* Popup */}
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">

@@ -7,6 +7,8 @@ import Logo from "../../assests/logo.jpg";
 import axios from "axios";
 import { triggerNotification } from "../../utils/toastUtil";
 
+const API = process.env.REACT_APP_API_URL;
+
 const Registration = () => {
   const [formData, setFormData] = useState({
     rePassword: "",
@@ -52,7 +54,7 @@ const Registration = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:7777/auth/register",
+        `${API}/auth/register`,
         formData,
         {
           withCredentials: true,
@@ -90,6 +92,7 @@ const Registration = () => {
               />
               <p className="text-gray-500">Register yourself.</p>
             </div>
+
             <form className="space-y-5" onSubmit={handleRegister}>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Username</label>
@@ -174,6 +177,7 @@ const Registration = () => {
           </div>
         </div>
       </div>
+
       <ToastContainer />
     </div>
   );

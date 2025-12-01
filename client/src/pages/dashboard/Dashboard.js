@@ -5,6 +5,8 @@ import defaultProfile from '../../assests/noprofile.jpeg';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const API = process.env.REACT_APP_API_URL;
+
 const Dashboard = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,12 +17,11 @@ const Dashboard = () => {
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const fetchDashboardStats = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:7777/api/dashboard/stats', {
+        const response = await fetch(`${API}/api/dashboard/stats`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -44,7 +45,7 @@ const Dashboard = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("http://localhost:7777/api/users/profile", {
+      const res = await fetch(`${API}/api/users/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -71,13 +72,11 @@ const Dashboard = () => {
     }
   };
 
-
   if (loading) return <div className="p-6 text-xl">Loading Dashboard...</div>;
   if (error) return <div className="p-6 text-red-500">Error: {error}</div>;
 
   return (
     <div className="p-6 space-y-8">
-      {/* Personal Info */}
       <div className="bg-white p-6 rounded-xl shadow flex items-center justify-between">
         <div className="flex items-center gap-6">
           {user?.photo ? (
@@ -89,7 +88,6 @@ const Dashboard = () => {
           ) : (
             <FaUserCircle className="text-5xl text-gray-500" />
           )}
-
 
           <div>
             <h2 className="text-xl font-bold text-gray-800">
@@ -110,7 +108,6 @@ const Dashboard = () => {
         </button>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <DashboardCard title="Students" value={data.students} icon={<FaUsers />} onClick={null} />
         <DashboardCard title="Courses" value={data.courses} icon={<FaChalkboardTeacher />} onClick={() => navigate("/courses")} />
@@ -119,7 +116,6 @@ const Dashboard = () => {
         <DashboardCard title="Events" value={data.events} icon={<FaCalendarAlt />} onClick={() => navigate("/calendar")} />
       </div>
 
-      {/* Profile Popup */}
       {showProfilePopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
