@@ -12,7 +12,7 @@ const Dashboard = () => {
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [editedUser, setEditedUser] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user")) || {};
   const navigate = useNavigate();
 
 
@@ -80,11 +80,16 @@ const Dashboard = () => {
       {/* Personal Info */}
       <div className="bg-white p-6 rounded-xl shadow flex items-center justify-between">
         <div className="flex items-center gap-6">
-          {user.photo ? (
-            <img src={user.photo || defaultProfile} alt={user.first_Name} className="w-16 h-16 rounded-full object-cover" />
+          {user?.photo ? (
+            <img
+              src={user.photo}
+              alt={user.first_Name || "User"}
+              className="w-16 h-16 rounded-full object-cover"
+            />
           ) : (
             <FaUserCircle className="text-5xl text-gray-500" />
           )}
+
 
           <div>
             <h2 className="text-xl font-bold text-gray-800">
