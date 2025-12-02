@@ -16,15 +16,17 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 h-16 bg-blue-500 shadow-md z-50 flex items-center justify-between px-6">
-      <div className="flex items-center gap-3">
-        <img src={logo} alt="Logo" className=" border-4 border-sky-500 h-12 rounded object-cover" />
-        {/* <h1 className="text-white font-bold text-xl">Discuz</h1> */}
-      </div>
+    <header className="fixed top-0 left-0 right-0 h-16 bg-blue-500 shadow-md z-50 flex items-center justify-between px-6">
+      
+      <section className="flex items-center gap-3">
+        <img 
+          src={logo} 
+          alt="Logo" 
+          className="border-4 border-sky-500 h-12 rounded object-cover" 
+        />
+      </section>
 
-
-      {/* Profile section */}
-      <div className="relative">
+      <section className="relative">
         <img
           src={user.photo || defaultProfile}
           alt="Profile"
@@ -32,9 +34,8 @@ const Navbar = () => {
           className="w-10 h-10 rounded-full object-cover cursor-pointer"
         />
 
-        {/* Dropdown menu */}
         {open && (
-          <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50 p-4">
+          <aside className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50 p-4">
             <h3 className="text-lg font-semibold text-gray-800">
               {user.first_Name} {user.LastName}
             </h3>
@@ -47,10 +48,11 @@ const Navbar = () => {
             >
               Logout
             </button>
-          </div>
+          </aside>
         )}
-      </div>
-    </nav>
+      </section>
+
+    </header>
   );
 };
 

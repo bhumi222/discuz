@@ -24,7 +24,7 @@ const Sidebar = () => {
   const navItems = [
     { icon: <FaHome />, text: "Dashboard", path: "/dashboard" },
     { icon: <FaLayerGroup />, text: "Courses", path: "/courses" },
-    { icon: <FaBook />, text: "Assignments", path: "/assignments" },
+    // { icon: <FaBook />, text: "Assignments", path: "/assignments" },
     { icon: <FaUserGraduate />, text: "Students", path: "/studentd" },
     { icon: <FaCalendarAlt />, text: "Calendar", path: "/calendar" },
   ];
