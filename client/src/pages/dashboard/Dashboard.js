@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const API = process.env.REACT_APP_API_URL;
+const PRIVATE_KEY = "r3azjcyft4e3pk8avtynmz64720yj6lbczh0uv99trhphx36d7";
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
@@ -13,6 +14,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [editedUser, setEditedUser] = useState(null);
+  const [usdToInr, setUsdToInr] = useState(null);
 
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const navigate = useNavigate();
@@ -39,6 +41,26 @@ const Dashboard = () => {
     };
 
     fetchDashboardStats();
+  }, []);
+
+  useEffect(() => {
+    const fetchDollarRate = async () => {
+      try {
+        const res = await fetch(
+          "https://api.westinpay.com/v1/currency/convert?from=USD&to=INR&amount=1",
+          {
+            headers: {
+              Authorization: `Bearer ${PRIVATE_KEY}`,
+            },
+          }
+        );
+
+        const data = await res.json();
+        setUsdToInr(data.converted);
+      } catch (err) {}
+    };
+
+    fetchDollarRate();
   }, []);
 
   const handleSaveProfile = async () => {
@@ -77,6 +99,7 @@ const Dashboard = () => {
 
   return (
     <div className="p-6 space-y-8">
+
       <div className="bg-white p-6 rounded-xl shadow flex items-center justify-between">
         <div className="flex items-center gap-6">
           {user?.photo ? (
@@ -107,6 +130,12 @@ const Dashboard = () => {
           <FaEdit /> Edit
         </button>
       </div>
+
+      
+        <div className="bg-gray-50 p-4 rounded-xl shadow border text-lg font-semibold">
+          1 USD = <span className="text-blue-600">{usdToInr?usdToInr:"89.88 "} INR</span>
+        </div>
+    
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <DashboardCard title="Students" value={data.students} icon={<FaUsers />} onClick={null} />
